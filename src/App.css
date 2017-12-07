@@ -26,3 +26,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.axis {
+  color: gray;
+  stroke: gray;
+  shape-rendering: crispEdges;
+  font-family: 'Helvetica';
+  font-size: 12px;
+  font-weight: 100;
+}
