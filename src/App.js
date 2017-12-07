@@ -33,6 +33,13 @@ const plotpoints = [
   "start_time": "2017-11-28T14:12:12Z",
   "status": "pass",
   "duration": 200,
+  },
+
+  {
+    "start_time": "2017-12-04T04:12:12Z",
+    "status": "fail",
+    "duration": 100,
+
   }
   ];
 
