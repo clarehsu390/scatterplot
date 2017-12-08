@@ -47,6 +47,7 @@ export default class ScatterPlot extends React.Component {
         });
 
         const xMin = min(xarr);
+        console.log(xMin)
         const xMax = max(xarr);
         const xScale = scaleTime().domain([xMin, xMax]).range([margin.left, width - margin.left]),
             xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")), //format month and date
@@ -60,7 +61,7 @@ export default class ScatterPlot extends React.Component {
         const yMax = max(yarr);
         const yScale = scaleLinear().domain([yMax, yMin]).nice().range([0, height - margin.top]),
                 yAxis = axisLeft(yScale).ticks(5).tickFormat(d => { return d + " min"}),
-            yValue = d => {return d;}
+            yValue = d => {return d.duration;}
  //determine color
         const color = scaleOrdinal()
         .domain(["pass", "error", "fail"])
@@ -78,7 +79,7 @@ export default class ScatterPlot extends React.Component {
 
             this.props.data.forEach( d => {
                 // xScale.domain([min(xarr, xValue)-1, max(xarr, xValue)+1]);
-                yScale.domain([max(yarr, yValue)-1, min(yarr, yValue)-1]);
+                // yScale.domain([max(yarr, yValue), min(yarr, yValue)]);
                 select(node) //format svg
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
