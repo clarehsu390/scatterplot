@@ -36,3 +36,12 @@
   font-weight: 100;
   border-top: 2px dashed gray;
 }
+
+.selected {
+  border: 2px solid white;
+}
+
+svg {
+  font-family: 'Verdana';
+  font-size: 12px;
+}

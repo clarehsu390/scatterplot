@@ -9,7 +9,6 @@ export default class Circles extends React.Component {
 
     componentDidMount() {
         this.createCircles();
-        console.log(this.props.node);
     }
 
     createCircles() {
@@ -25,7 +24,7 @@ export default class Circles extends React.Component {
     }
     render() {
         return (
-            <svg ref={node => this.node = node}></svg>
+            <div></div>
         );
     }
 }
