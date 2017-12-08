@@ -11,7 +11,7 @@ body {
 }
 
 .axis path {
-  stroke: #d3d3d3;
+  stroke: #eaeaea;
 }
 
 .axis text{
@@ -25,7 +25,7 @@ body {
 
 .selected {
   r:13;
-  filter: drop-shadow(16px 16px 10px black);
+  stroke: #FCFBE3;
 }
 
 svg {
@@ -33,4 +33,5 @@ svg {
   font-size: 12px;
   margin: auto;
 }
+
 
