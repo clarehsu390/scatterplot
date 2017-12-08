@@ -36,7 +36,7 @@ export default class ScatterPlot extends React.Component {
         
         const xMin = min(xarr);
         const xMax = max(xarr);
-        const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width + margin.left]),
+        const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width]),
             xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")).tickPadding(10), //format month and date
             xValue = d => {return d;}
         
@@ -78,7 +78,7 @@ export default class ScatterPlot extends React.Component {
             //draw y-axis
                     .append("g")
                     .attr("class", "y axis")
-                    .call(yAxis.tickSizeInner(-width))
+                    .call(yAxis.tickSizeInner(-width + margin.left))
                     .style("stroke-dasharray", ("3", "3"))
                     .select(".domain").remove()
                     
@@ -91,7 +91,7 @@ export default class ScatterPlot extends React.Component {
                 .attr("class", "x axis")
                 .call(xAxis)
                 .selectAll(".tick line")
-                .attr("y2", 10)
+                .attr("transform", "translate(0, 5)");
             
                 select(node)
                 .selectAll('scatter-dots')
@@ -127,8 +127,6 @@ export default class ScatterPlot extends React.Component {
 
     handleClick(e) {
         select(this).classed('selected', select(this).classed('selected') ? false : true);
-        select('.selected')
-        .attr('stroke-width', 5)
     }
 
     render() {
