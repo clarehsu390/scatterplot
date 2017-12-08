@@ -103,7 +103,7 @@ export default class ScatterPlot extends React.Component {
             .enter().append('circle')
             // .on('click', this.toggleClass)
             .attr('cx', obj => {return xScale(Date.parse(obj.start_time));})
-            .attr('cy', obj => {return yScale(obj.duration/60);})
+            .attr('cy', obj => {return yScale(obj.duration/60.0);})
             .attr('r', 7)
             .style('fill', d => circleColors(d));
             // .on("click", () => select(this).classed("selected", select(this).classed("selected") ? false : true));
