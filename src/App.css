@@ -23,21 +23,31 @@
 }
 
 
-.axis {
+.axis line{
   color: gray;
-  stroke: gray;
+  stroke: #d3d3d3;
   shape-rendering: crispEdges;
-  font-family: 'Helvetica';
-  font-size: 12px;
-  font-weight: 100;
-  border-top: 2px dashed gray;
+}
+
+.axis path {
+  stroke: #d3d3d3;
+}
+
+.axis text{
+  fill: #d3d3d3;
+
+}
+
+.axis {
+  font-size: 14px;
 }
 
 .selected {
-  border: 2px solid white;
+  r:13;
+  filter: drop-shadow(16px 16px 10px black);
 }
 
 svg {
-  font-family: 'Verdana';
+  font: 'roboto';
   font-size: 12px;
 }

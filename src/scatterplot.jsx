@@ -9,63 +9,55 @@ import { timeFormat, utcParse } from 'd3-time-format';
 import Circles from './circles';
 
 
-const months = ["January", "February", "March", "April", "May", "June",
-"July", "August", "September", "October", "November", "December"
-];
-
 
 export default class ScatterPlot extends React.Component {
     constructor(props) {
         super(props);
         this.createScatterPlot = this.createScatterPlot.bind(this);
-        this.state = {
-            node: null
-        };
-        }
-
+    }
+    
     componentDidMount() {
         this.createScatterPlot();
-        this.setState({
-            node: this.refs.node
-        });
         
     }
     
     componentDidUpdate() {
         this.createScatterPlot();
     }
-
+    
     createScatterPlot() {
-        let margin = {top: 100, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        let margin = {top: 100, right: 20, bottom: 30, left: 60
+        },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
         const node = this.refs.node; //reference to actual DOM node'
-
+        
         let xarr = this.props.data.map(obj => {
-            console.log(utcParse(obj.start_time));
             return new Date(utcParse(obj.start_time));
         });
-
-        const xMin = min(xarr);
-        console.log(xMin)
-        const xMax = max(xarr);
-        const xScale = scaleTime().domain([xMin, xMax]).range([margin.left, width - margin.left]),
-            xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")), //format month and date
-            xValue = d => {return d;}
         
-            let yarr = this.props.data.map(obj => {
+        const xMin = min(xarr);
+        const xMax = max(xarr);
+        const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width - margin.left]),
+        xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")).tickPadding(10), //format month and date
+        xValue = d => {return d;}
+        
+        let yarr = this.props.data.map(obj => {
             return Math.round(obj.duration/60);
         });
         
         const yMin = min(yarr);
         const yMax = max(yarr);
-        const yScale = scaleLinear().domain([yMax, yMin]).nice().range([0, height - margin.top]),
-                yAxis = axisLeft(yScale).ticks(5).tickFormat(d => { return d + " min"}),
+        const yScale = scaleLinear().domain([yMax + 1, yMin]).nice().range([0, height - margin.top]),
+        yAxis = axisLeft(yScale).ticks(5).tickFormat(d => {
+            if (d === 0) return ''
+            return d + " min"}),
             yValue = d => {return d.duration;}
- //determine color
-        const color = scaleOrdinal()
-        .domain(["pass", "error", "fail"])
-        .range(["green", "orange", "red"]);
+            //determine color
+            const color = scaleOrdinal()
+            .domain(["pass", "error", "fail"])
+            .range(["green", "orange", "red"]);
+            
 
         const circleColors = d => {
             if (d.status === 'pass') {
@@ -95,43 +87,49 @@ export default class ScatterPlot extends React.Component {
             .attr("transform", "translate(0," + height + ")")
             .attr("class", "x axis")
             .call(xAxis)
-          
-            select(node)
+        select(node)
             .selectAll('scatter-dots')
+            
             .data(this.props.data)
             .enter().append('circle')
-            // .on('click', this.toggleClass)
             .attr('cx', obj => {return xScale(Date.parse(obj.start_time));})
-            .attr('cy', obj => {return yScale(obj.duration/60.0);})
+            .attr('cy', obj => {return yScale(obj.duration/60 - 1.8);})
             .attr('r', 7)
-            .style('fill', d => circleColors(d));
-            // .on("click", () => select(this).classed("selected", select(this).classed("selected") ? false : true));
+            .style('fill', d => circleColors(d))
+            .on('click', this.handleClick)
+            // select('circle').classed("selected", select('circle').classed("selected") ? false : true));
             let legend = select(node)
             .selectAll('.legend')
             .data(color.domain())
             .enter().append("g")
             .attr("class", "legend")
             .attr("transform", (d, i) => { return "translate(" + i * 70+ ",40)";});
-
-            legend.append("rect")
-            .attr("x", width - 200)
-            .attr("width", 10)
-            .attr("height", 10)
+            
+            legend.append("circle")
+            .attr("cx", width - 200)
+            .attr('cy', height - 360)
+            .attr('r', 7)
             .style("fill", color);
         
             legend.append("text")
-            .attr("x", width - 180)
-            .attr("y", 5)
-            .attr("dy", "5")
+            .attr("x", width - 185)
+            .attr("y", 4)
+            .attr("dy", "9")
             .style("text-anchor", "start")
             .text(d => (d));
             });
     }
 
+    handleClick(e) {
+        select(this).classed('selected', select(this).classed('selected') ? false : true);
+        select('.selected')
+        .style('filter', 'drop-shadow');
+            
+    }
+
     render() {
         return (
         <svg ref="node">
-        <Circles data={this.props.data} node={this.state.node}/>
         </svg>
 
         );
