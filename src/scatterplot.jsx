@@ -36,7 +36,7 @@ export default class ScatterPlot extends React.Component {
         
         const xMin = min(xarr);
         const xMax = max(xarr);
-        const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width + margin.right]),
+        const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width + margin.left]),
             xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")).tickPadding(10), //format month and date
             xValue = d => {return d;}
         
@@ -78,7 +78,7 @@ export default class ScatterPlot extends React.Component {
             //draw y-axis
                     .append("g")
                     .attr("class", "y axis")
-                    .call(yAxis.tickSizeInner(-width + margin.left))
+                    .call(yAxis.tickSizeInner(-width))
                     .style("stroke-dasharray", ("3", "3"))
                     .select(".domain").remove()
                     
