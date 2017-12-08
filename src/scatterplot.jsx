@@ -3,7 +3,7 @@ import { scaleLinear, scaleTime, nice, tickFormat, scaleOrdinal} from 'd3-scale'
 import { format } from 'd3-format';
 import { ticks, timeDay } from 'd3-time';
 import { max, min, range, domain } from 'd3-array';
-import { axisLeft, axisBottom, tickArguments } from 'd3-axis';
+import { axisLeft, axisBottom } from 'd3-axis';
 import { select, selectAll, classedTrue } from 'd3-selection';
 import { timeFormat, utcParse } from 'd3-time-format';
 import Circles from './circles';
@@ -39,7 +39,7 @@ export default class ScatterPlot extends React.Component {
         const xMin = min(xarr);
         const xMax = max(xarr);
         const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width - margin.left]),
-        xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")).tickPadding(10), //format month and date
+        xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")), //format month and date
         xValue = d => {return d;}
         
         let yarr = this.props.data.map(obj => {
@@ -49,8 +49,10 @@ export default class ScatterPlot extends React.Component {
         const yMin = min(yarr);
         const yMax = max(yarr);
         const yScale = scaleLinear().domain([yMax + 1, yMin]).nice().range([0, height - margin.top]),
-        yAxis = axisLeft(yScale).ticks(5).tickFormat(d => {
-            if (d === 0) return ''
+        yAxis = axisLeft(yScale).tickFormat(d => {
+            if (d === 0 || d.toString().includes('.5')) {
+                return ''
+            }
             return d + " min"}),
             yValue = d => {return d.duration;}
             //determine color
@@ -80,25 +82,30 @@ export default class ScatterPlot extends React.Component {
             //draw y-axis
             .append("g")
             .attr("class", "y axis")
-            .call(yAxis)
+            .style("stroke-dasharray", ("3", "3"))
+            .call(yAxis.tickSizeInner(-width + margin.left))
+            .select(".domain").remove()
+            
+            
         //draw x-axis
         select(node)
             .append("g")
             .attr("transform", "translate(0," + height + ")")
             .attr("class", "x axis")
             .call(xAxis)
+            
         select(node)
             .selectAll('scatter-dots')
             
             .data(this.props.data)
             .enter().append('circle')
             .attr('cx', obj => {return xScale(Date.parse(obj.start_time));})
-            .attr('cy', obj => {return yScale(obj.duration/60 - 1.8);})
+            .attr('cy', obj => {return yScale(obj.duration/60 - 1.5);})
             .attr('r', 7)
             .style('fill', d => circleColors(d))
             .on('click', this.handleClick)
-            // select('circle').classed("selected", select('circle').classed("selected") ? false : true));
-            let legend = select(node)
+            
+        let legend = select(node)
             .selectAll('.legend')
             .data(color.domain())
             .enter().append("g")
