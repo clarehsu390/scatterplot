@@ -1,9 +1,9 @@
 import React from 'react';
 import { scaleLinear, scaleTime, nice, tickFormat, scaleOrdinal} from 'd3-scale';
 import { format } from 'd3-format';
-import { ticks } from 'd3-time';
+import { ticks, timeDay } from 'd3-time';
 import { max, min, range, domain } from 'd3-array';
-import { axisLeft, axisBottom } from 'd3-axis';
+import { axisLeft, axisBottom, tickArguments } from 'd3-axis';
 import { select, selectAll, classedTrue } from 'd3-selection';
 import { timeFormat, utcParse } from 'd3-time-format';
 import Circles from './circles';
@@ -45,23 +45,21 @@ export default class ScatterPlot extends React.Component {
             console.log(utcParse(obj.start_time));
             return new Date(utcParse(obj.start_time));
         });
-        
-        
-        let formatTime = timeFormat("%b %d"); //format time as month and day
+
         const xMin = min(xarr);
-        console.log(xMin);
         const xMax = max(xarr);
         const xScale = scaleTime().domain([xMin, xMax]).range([margin.left, width - margin.left]),
-            xAxis = axisBottom(xScale).tickFormat(timeFormat("%b %d")).ticks(7),
+            xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")), //format month and date
             xValue = d => {return d;}
         
             let yarr = this.props.data.map(obj => {
             return Math.round(obj.duration/60);
         });
         
+        const yMin = min(yarr);
         const yMax = max(yarr);
-        const yScale = scaleLinear().domain([5, 0]).range([0, height - margin.top]),
-                yAxis = axisLeft().scale(yScale).tickValues([1,2,3,4,5]).ticks(6),
+        const yScale = scaleLinear().domain([yMax, yMin]).nice().range([0, height - margin.top]),
+                yAxis = axisLeft(yScale).ticks(5).tickFormat(d => { return d + " min"}),
             yValue = d => {return d;}
  //determine color
         const color = scaleOrdinal()
@@ -76,11 +74,11 @@ export default class ScatterPlot extends React.Component {
             } else {
                 return 'red';
             }
-        }
+        };
 
             this.props.data.forEach( d => {
                 // xScale.domain([min(xarr, xValue)-1, max(xarr, xValue)+1]);
-                // yScale.domain([max(yarr, yValue)+1, min(yarr, yValue)-1]);
+                yScale.domain([max(yarr, yValue)-1, min(yarr, yValue)-1]);
                 select(node) //format svg
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
