@@ -5,7 +5,7 @@ import { ticks, timeDay } from 'd3-time';
 import { max, min, range, domain } from 'd3-array';
 import { axisLeft, axisBottom, tickSizeOuter } from 'd3-axis';
 import { select, selectAll, classedTrue } from 'd3-selection';
-import { timeFormat, utcParse } from 'd3-time-format';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 
 
@@ -31,10 +31,12 @@ export default class ScatterPlot extends React.Component {
         const node = this.refs.node; //reference to actual DOM node'
         
         let xarr = this.props.data.map(obj => {
-            return new Date(utcParse(obj.start_time));
+            console.log(new Date(obj.start_time) )
+            return new Date(obj.start_time)
         });
         
         const xMin = min(xarr);
+        console.log(xarr)
         const xMax = max(xarr);
         const xScale = scaleTime().domain([timeDay.floor(xMin), timeDay.ceil(xMax)]).range([margin.left, width]),
             xAxis = axisBottom(xScale).ticks(timeDay.every(1)).tickFormat(timeFormat("%b %d")).tickPadding(10), //format month and date
@@ -97,8 +99,8 @@ export default class ScatterPlot extends React.Component {
                 .selectAll('scatter-dots')
                 .data(this.props.data)
                 .enter().append('circle')
-                .attr('cx', obj => {return xScale(Date.parse(obj.start_time));})
-                .attr('cy', obj => {return yScale(obj.duration/60 - 1.5);})
+                .attr('cx', obj => {return xScale(Date.parse(obj.start_time))})
+                .attr('cy', obj => {return yScale(obj.duration/60 - 1.75);})
                 .attr('r', 7)
                 .style('fill', d => circleColors(d))
                 .on('click', this.handleClick)
